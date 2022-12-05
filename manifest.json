@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Learn Armenian Alphabet",
+  "version": "0.0.1",
+  "author": "Maria Malysheva",
+  "description": "Транслитерация кириллицы армянским алфавитом. Выучите восточноармянский алфавит, читая тексты на русском языке.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": "icons/icon128.png",
+    "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_popup": "html/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["js/content.js"]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ]
+}
