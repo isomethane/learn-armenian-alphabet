@@ -54,8 +54,19 @@ function transliteratePageMessageHandler(message, sender, sendResponse) {
     return text;
   }
 
+  let observerConfig = { childList: true, subtree: true };
+  let mutationCallback = (mutationList) => {
+    for (let mutation of mutationList) {
+      for (let node of mutation.addedNodes) {
+        replaceText(node, processText)
+      }
+    }
+  };
+  let observer = new MutationObserver(mutationCallback);
+
   for (let bodyElement of document.getElementsByTagName("body")) {
     replaceText(bodyElement, processText);
+    observer.observe(bodyElement, observerConfig);
   }
 
   sendResponse("success");
