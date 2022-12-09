@@ -6,6 +6,8 @@ function pageSetup() {
   setupCheckboxes();
   document.getElementById("save-button").addEventListener("click", onSaveButtonClick);
   document.getElementById("transliterate-button").addEventListener("click", onTransliterateButtonClick);
+
+  injectContentScript();
 }
 
 function getSubstitutionOptions() {
@@ -63,12 +65,8 @@ function onTransliterateButtonClick() {
   for (let option in substitutions) {
     substitutions[option] = Object.fromEntries(substitutions[option]);
   }
-  const params = {
-    active: true,
-    currentWindow: true
-  }
-  chrome.tabs.query(params, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, substitutions, undefined, (response) => {
+  getActiveTab((tabId) => {
+    chrome.tabs.sendMessage(tabId, substitutions, undefined, (response) => {
       if (response === "success") {
         onSuccessfulAction("transliterate-button");
       }
@@ -108,6 +106,30 @@ function setCheckedAll(isChecked) {
   }
 }
 
+
+// Content script injection
+
+function injectContentScript() {
+  getActiveTab((tabId) => {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tabId },
+        files: ["js/content.js"]
+      },
+      () => {}
+    );
+  });
+}
+
+function getActiveTab(callback) {
+  const params = {
+    active: true,
+    currentWindow: true
+  };
+  chrome.tabs.query(params, (tabs) => {
+    callback(tabs[0].id);
+  });
+}
 
 // Options persistence utility functions
 

@@ -1,4 +1,6 @@
-chrome.runtime.onMessage.addListener(transliteratePageMessageHandler);
+if (!chrome.runtime.onMessage.hasListeners()) {
+  chrome.runtime.onMessage.addListener(transliteratePageMessageHandler);
+}
 
 function transliteratePageMessageHandler(message, sender, sendResponse) {
   let substitutions = {
