@@ -56,7 +56,11 @@ function getSubstitutionOptions() {
 
 function onSaveButtonClick() {
   saveMap("alphabet-options", collectOptions(), () => {
-    onSuccessfulAction("save-button");
+    if (chrome.runtime.lastError) {
+      onCompleteAction("save-button", false);
+      return;
+    }
+    onCompleteAction("save-button", true);
   });
 }
 
@@ -67,18 +71,23 @@ function onTransliterateButtonClick() {
   }
   getActiveTab((tabId) => {
     chrome.tabs.sendMessage(tabId, substitutions, undefined, (response) => {
+      if (chrome.runtime.lastError) {
+        onCompleteAction("transliterate-button", false);
+        return;
+      }
       if (response === "success") {
-        onSuccessfulAction("transliterate-button");
+        onCompleteAction("transliterate-button", true);
       }
     });
   });
 }
 
-function onSuccessfulAction(id) {
+function onCompleteAction(id, isSuccessful) {
+  let className = isSuccessful ? "action-success" : "action-failure";
   let element = document.getElementById(id);
-  element.classList.add("action-success");
+  element.classList.add(className);
   setTimeout(() => {
-    element.classList.remove("action-success");
+    element.classList.remove(className);
   }, 500);
 }
 
@@ -116,7 +125,11 @@ function injectContentScript() {
         target: { tabId: tabId },
         files: ["js/content.js"]
       },
-      () => {}
+      () => {
+        if (chrome.runtime.lastError) {
+          // Not allowed to inject content script - ignore error
+        }
+      }
     );
   });
 }

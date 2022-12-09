@@ -39,6 +39,10 @@ body {
     background-color: #66cd00;
 }
 
+.action-failure {
+    background-color: indianred;
+}
+
 .invisible {
     display: none;
 }
